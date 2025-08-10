@@ -1,16 +1,13 @@
 import os
-# os.environ["CUDA_VISIBLE_DEVICES"]="0"
+# os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 import argparse
 import json
 import torch
 
-
 from config.configm import get_default_config
-from model.trainer_match import Trainer
-
-# from config.config import get_default_config
-# from model.trainer import Trainer
+from model.trainer import Trainer as TrainerStage1
+from model.trainer_match import Trainer as TrainerStage2
 
 
 def main():
@@ -53,31 +50,55 @@ def main():
     if args.sam_lr:
         config['sam_lr'] = args.sam_lr
     
-    
     print(f"Running mode: {args.mode}")
     print(f"Batch size: {config['batch_size']}")
     print(f"Learning rate: {config['learning_rate']}")
     print(f"Finetune SAM: {config.get('finetune_sam', False)}")
     
-    trainer = Trainer(config)
-    
-    # Run based on mode
+    # Two-stage training state
+    stage1_epoch_target = 30
+    stage1_resume_path = None
+    trainer_stage2 = None
+
+    # Stage-wise training
     if args.mode in ['train', 'train_test']:
-        print("Starting training...")
-        trainer.train()
-        print("Training complete!")
-        
+        # Stage 1: base trainer for 30 epochs
+        print("Stage 1: Training with base Trainer for 30 epochs ...")
+        stage1_config = dict(config)
+        stage1_config['epochs'] = stage1_epoch_target
+        trainer_stage1 = TrainerStage1(stage1_config)
+        trainer_stage1.train()
+        print("Stage 1 finished.")
+
+        best_ckpt = trainer_stage1.checkpoint_dir / 'best_model.pth'
+        if best_ckpt.exists():
+            stage1_resume_path = str(best_ckpt)
+            print(f"Fallback to best checkpoint: {stage1_resume_path}")
+        else:
+            print("Warning: No checkpoint available for Stage 2. It will start from random initialization.")
+
+        # Stage 2: matching trainer to continue to total epochs (default 100)
+        print("Stage 2: Training with matching Trainer from epoch 30 to the final epoch ...")
+        stage2_config = dict(config)
+        stage2_config['resume_checkpoint'] = stage1_resume_path
+        # Keep total target epochs as config['epochs'] (default 100)
+        stage2_config['epochs'] = config.get('epochs', 100)
+        trainer_stage2 = TrainerStage2(stage2_config)
+        trainer_stage2.train()
+        print("Stage 2 finished.")
+
+    # Testing
     if args.mode in ['test', 'train_test']:
         print("Starting testing...")
-        # If testing after training and no checkpoint is specified, use the best checkpoint
-        checkpoint_to_test = config['test_checkpoint']
+        checkpoint_to_test = config.get('test_checkpoint')
+        # If testing right after training and no explicit checkpoint provided, use Stage 2 best
         if args.mode == 'train_test' and not checkpoint_to_test:
-            best_checkpoint = trainer.checkpoint_dir / 'best_model.pth'
+            best_checkpoint = trainer_stage2.checkpoint_dir / 'best_model.pth'
             if best_checkpoint.exists():
                 checkpoint_to_test = str(best_checkpoint)
-                print(f"Using best model for testing: {checkpoint_to_test}")
-        
-        test_loss, test_metrics, pred_dir = trainer.test(checkpoint_to_test)
+                print(f"Using Stage 2 best model for testing: {checkpoint_to_test}")
+
+        test_loss, test_metrics, pred_dir = trainer_stage2.test(checkpoint_to_test)
         print(f"Testing complete! Average loss: {test_loss:.4f}, IoU: {test_metrics['mean_iou']:.4f}")
         print(f"Predictions saved to {pred_dir}")
 
