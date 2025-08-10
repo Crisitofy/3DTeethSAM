@@ -12,11 +12,12 @@ import hydra
 from hydra import compose
 from hydra.utils import instantiate
 from omegaconf import OmegaConf
+from hydra.core.global_hydra import GlobalHydra
 
-# 添加 sam2 到 Python 路径
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)  # model 目录
-sys.path.insert(0, parent_dir)  # 这样 Python 就能找到 sam2 模块
+parent_dir = os.path.dirname(current_dir)  
+sys.path.insert(0, parent_dir) 
 
 
 def build_sam2(
@@ -37,7 +38,12 @@ def build_sam2(
             "++model.sam_mask_decoder_extra_args.dynamic_multimask_stability_delta=0.05",
             "++model.sam_mask_decoder_extra_args.dynamic_multimask_stability_thresh=0.98",
         ]
-    # Initialize Hydra manually
+    # Initialize Hydra (clear previous instance if already initialized)
+    try:
+        if GlobalHydra.instance().is_initialized():
+            GlobalHydra.instance().clear()
+    except Exception:
+        pass
     hydra.initialize(config_path="configs", version_base=None)
 
     # Read config and init model
