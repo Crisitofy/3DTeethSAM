@@ -306,25 +306,15 @@ class Trainer:
         # Load model weights, allowing for non-strict matching
         self.logger.info(f"Loading model weights from checkpoint {checkpoint_path}...")
         load_result = self.model.load_state_dict(checkpoint['model_state_dict'], strict=False)
-        
-        if load_result.missing_keys:
-            self.logger.warning(f"Missing keys when loading model: {load_result.missing_keys}")
-        if load_result.unexpected_keys:
-            self.logger.warning(f"Unexpected keys when loading model: {load_result.unexpected_keys}")
-        
-        if not load_result.missing_keys and not load_result.unexpected_keys:
-            self.logger.info("Model weights loaded, all keys matched.")
-
+    
         # Only attempt to load optimizer and scheduler states if model weights loaded perfectly
         if not load_result.missing_keys and not load_result.unexpected_keys:
             try:
                 self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
                 self.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-                self.logger.info("Optimizer and scheduler states loaded from checkpoint.")
+                # self.logger.info("Optimizer and scheduler states loaded from checkpoint.")
             except ValueError as e:
                 self.logger.warning(f"Failed to load optimizer/scheduler state: {e}. Using new optimizer/scheduler.")
-        else:
-            self.logger.warning("Optimizer and scheduler will be re-initialized because the model architecture has changed (missing/unexpected keys detected).")
 
         if 'uncertainty_weighting_state_dict' in checkpoint:
             self.criterion.load_state_dict(checkpoint['uncertainty_weighting_state_dict'], strict=False)
