@@ -130,6 +130,14 @@ class Trainer:
             pin_memory=True,
             persistent_workers=True
         )
+        self.val_loader = DataLoader(
+            val_dataset,
+            batch_size=batch_size,
+            shuffle=False,
+            num_workers=self.config['num_workers'],
+            pin_memory=True,
+            persistent_workers=True
+        )
             
     def setup_test_data(self):
         """Initialize test dataset."""
@@ -306,8 +314,8 @@ class Trainer:
             self.logger.info(f"Resuming from checkpoint: {self.config['resume_checkpoint']}")
             start_epoch = self.load_checkpoint(self.config['resume_checkpoint']) + 1
             self.logger.info(f"Training will continue from epoch {start_epoch}")
-        # start_epoch = 6
         best_val_loss = float('inf')
+        start_epoch = 30
         best_val_iou = 0
         # Set validation interval
         val_interval = self.config.get('val_interval')  # Validation frequency
