@@ -1,5 +1,4 @@
 def get_default_config():
-    """获取默认配置"""
     return {
 
         'data_dir': 'preprocess_data',  
