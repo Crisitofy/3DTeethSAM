@@ -178,14 +178,17 @@ The script reports OA, tooth‑wise mIoU, Dice, and bIoU.
 
 ## Citation
 
-<!-- ```bibtex
-@inproceedings{Lu2026ThreeDTeethSAM,
-  title     = {3DTeethSAM: Taming SAM2 for 3D Teeth Segmentation},
-  author    = {Zhiguo Lu and Jianwen Lou and Mingjun Ma and Hairong Jin and Youyi Zheng and Kun Zhou},
-  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
-  year      = {2026}
+```bibtex
+@misc{lu20253dteethsamtamingsam23d,
+      title={3DTeethSAM: Taming SAM2 for 3D Teeth Segmentation}, 
+      author={Zhiguo Lu and Jianwen Lou and Mingjun Ma and Hairong Jin and Youyi Zheng and Kun Zhou},
+      year={2025},
+      eprint={2512.11557},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2512.11557}, 
 }
-``` -->
+```
 
 ---
 
