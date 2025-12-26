@@ -27,6 +27,8 @@ Official PyTorch implementation of **3DTeethSAM: Taming SAM2 for 3D Teeth Segmen
 conda create -n 3dteethsam python=3.10
 conda activate 3dteethsam
 pip install -r requirements.txt
+pip install ninja
+pip install --no-build-isolation "git+https://github.com/facebookresearch/pytorch3d.git"
 
 # 2) download checkpoints to ckpts/ and model/sam2/checkpoints/
 # 3) preprocess raw Teeth3DS-style data
@@ -49,6 +51,8 @@ Install dependent Python libraries by running the command below.
 conda create -n 3dteethsam python=3.10
 conda activate 3dteethsam
 pip install -r requirements.txt
+pip install ninja
+pip install --no-build-isolation "git+https://github.com/facebookresearch/pytorch3d.git"
 ```
 ---
 
