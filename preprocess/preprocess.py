@@ -180,7 +180,7 @@ class ToothPreprocessor:
         fname = Path(obj_path).stem
         os.makedirs(save_dir, exist_ok=True)
 
-        verts, faces, _ = self.load_and_normalize_mesh(obj_path)
+        verts, faces = self.load_and_normalize_mesh(obj_path)
         sem_labels, ins_labels, valid_teeth = self.load_labels(label_path, jaw_type)
         
         num_views = len(self.views)
