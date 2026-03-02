@@ -4,7 +4,7 @@ Official PyTorch implementation of **3DTeethSAM: Taming SAM2 for 3D Teeth Segmen
 
 3DTeethSAM adapts the 2D foundation model **SAM2** to perform **automatic 3D teeth instance segmentation** on high‑resolution intraoral scans by combining multi‑view rendering, lightweight adapters, and a 2D‑to‑3D lifting strategy.
 
-> **Paper:** *3DTeethSAM: Taming SAM2 for 3D Teeth Segmentation* 
+> **Paper:** *[3DTeethSAM: Taming SAM2 for 3D Teeth Segmentation](https://arxiv.org/abs/2512.11557)*
 
 ![alt text](images/pipeline.png)
 ---
